@@ -25,9 +25,11 @@ class AuthController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
         $request->role == "admin" ? $user->assignRole('admin') : $user->assignRole('user');
-        return response()->json([
-            'message'=>'User created',
-        ],201);
+
+        // return response()->json([
+        //     'message'=>'User created',
+        // ],201);
+        return $this->login($request);
     }
 
     /**
