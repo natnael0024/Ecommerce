@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Order;
-
-
 class OrderController extends Controller
 {
     /**
@@ -13,7 +13,10 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orders = Order::orderBy('created_at','desc')
+            ->paginate(10); 
+
+        return OrderResource::collection($orders);
     }
 
     /**
@@ -29,7 +32,16 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'product_ids'=>'required',
+            'total_price'=>'required',
+        ]);
+        $validated['product_ids'] = json_encode($validated['product_ids']);
+        $validated['user_id'] = Auth::id();
+        
+        $order = Order::create($validated);
+
+        return new OrderResource($order);
     }
 
     /**
@@ -37,7 +49,8 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::findOr($id);
+        return new OrderResource($order);
     }
 
     /**
@@ -53,7 +66,18 @@ class OrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+
+        $validated = $request->validate([
+            'product_ids'=>'required|array',
+            'total_price'=>'required',
+        ]);
+        $validated['product_ids'] = json_encode($validated['product_ids']);
+        $validated['user_id'] = Auth::id();
+
+        $order->update($validated);
+
+        return new OrderResource($order);
     }
 
     /**
@@ -61,6 +85,8 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return response()->json([],204);
     }
 }

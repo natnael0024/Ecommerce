@@ -50,17 +50,9 @@ class ProductController extends Controller
         if($request->hasFile('image'))
         {
             $image = $request->file('image');
-            // $imageName = 'product'.'_'.$validated['name'].'_'.time().'.'.$request->image->extension();
-            // $image->storeAs('public/product_images', $imageName);
-            // $validated['image_path'] = $imageName;
-            
-            // supabse upload
-            try{
-                $result = $this->supabase->uploadImage($image, 'products');
-                $validated['image_path'] = $result['url'];
-            } catch(\Exception $e){
-                return response()->json($e->getMessage());
-            }
+            $imageName = 'product_' . $validated['name'] . '_' . time() . '.' . $image->extension();
+            $imagePath = $image->move(public_path('product_images'), $imageName);
+            $validated['image_path'] = asset('product_images/' . $imageName);
         }
 
         $prod = Product::create($validated);
@@ -93,17 +85,26 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'name'=>'required',
-            'description'=>'nullable|string',
-            'price'=>'required',
-            'quantity'=>'nullable',
+            'name'=>'sometimes',
+            'description'=>'sometimes|string',
+            'price'=>'sometimes',
+            'quantity'=>'sometimes',
             // 'image_path'=>'nullable'
         ]);
 
         if($request->hasFile('image'))
         {
-            $image = $request->file('image');    
+            $image = $request->file('image');
+            $imageName = 'product_' . $validated['name'] . '_' . time() . '.' . $image->extension();
+            // $imagePath = $image->storeAs('public/product_images', $imageName);   
+            $imagePath = $image->move(public_path('product_images'), $imageName);
+            $validated['image_path'] = asset('product_images/' . $imageName);
         }
+
+        $product->update($validated);
+        $product = Product::findOrFail($id);
+
+        return new ProductResource($product);
     }
 
     /**
@@ -114,11 +115,13 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         if ($product->image_path) {
-            $this->supabase->deleteImage($product->image_path);
+            $imagePath = public_path('product_images/' . basename($product->image_path));
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
         }
-
         $product->delete();
 
-        return response()->json(['message' => 'Product deleted successfully.'], 204);
+        return response()->json([], 204);
     }
 }

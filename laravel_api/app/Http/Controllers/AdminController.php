@@ -2,20 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryResource;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Category;
 
-
-class CategoryController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::all();
-        return CategoryResource::collection($categories);
+        
+    }
+
+    public function getAnalytics()
+    {
+        $totalProducts = Product::count();
+        $totalOrders = Order::count();
+        $totalUsers = User::count();
+
+        return response()->json([
+            'totalProducts' => $totalProducts,
+            'totalOrders' => $totalOrders,
+            'totalUsers' => $totalUsers,
+        ]);
     }
 
     /**
@@ -31,13 +43,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'=>'required|string|max:100'
-        ]);
-
-        $category = Category::create($validated);
-
-        return new CategoryResource($category);
+        //
     }
 
     /**
@@ -61,24 +67,14 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validated = $request->validate([
-            'name'=>'required|string|max:100'
-        ]);
-
-        $category = Category::findOrFail($id);
-        $category->update($validated);
-
-        return new CategoryResource($category);
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return response()->json([],204);
+        //
     }
 }
