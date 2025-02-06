@@ -25,9 +25,9 @@ class SupabaseService
         ]);
     }
 
-    public function uploadImage($file, $path)
+    public function uploadImage($file, $fileName)
     {
-        $fileName = $path . '/' . uniqid() . '.' . $file->getClientOriginalExtension();
+        // $fileName = $path . '/' . uniqid() . '.' . $file->getClientOriginalExtension();
 
         $response = $this->client->post("/storage/v1/object/$this->bucket/$fileName", [
             'headers' => [

@@ -16,7 +16,14 @@ class UserController extends Controller
     {
         $users = User::orderBy('name','asc')
             ->paginate(10);
-        return UserResource::collection($users);
+        return UserResource::collection($users)->response()->getData(true);
+    }
+
+    public function getCustomers(): mixed
+    {
+        $customers = User::role('user')->orderBy('created_at','desc')
+            ->paginate(10);
+        return UserResource::collection($customers)->response()->getData(true);
     }
 
     /**
@@ -74,9 +81,9 @@ class UserController extends Controller
             403);
         
         $validated = $request->validate([
-            'name' => 'required|max:100',
-            'email'=> 'required',
-            'password' => 'required'
+            'name' => 'sometimes|max:100',
+            'email'=> 'sometimes',
+            'password' => 'sometimes'
         ]);
 
         if($request->role && Auth::user()->hasRole('admin')){

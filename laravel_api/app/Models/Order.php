@@ -9,9 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     protected $fillable = [
-        'user_id',
-        'product_ids',
-        'total_price'
+        'user_id', 
+        'total_price', 
+        'status', 
+        'payment_status',
+        'shipping_name', 
+        'shipping_address', 
+        'shipping_city',
+        'shipping_zip', 
+        'shipping_country'
     ];
 
     public function user(): BelongsTo
@@ -19,10 +25,8 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getProductsAttribute()
+    public function items(): HasMany
     {
-        $productIds = json_decode($this->product_ids, true);
-
-        return Product::whereIn('id', $productIds)->get();
+        return $this->hasMany(OrderItem::class,'order_id','id');
     }
 }
