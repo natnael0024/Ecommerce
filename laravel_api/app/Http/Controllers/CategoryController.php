@@ -45,7 +45,8 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+        return response()->json(new CategoryResource($category),200);
     }
 
     /**
@@ -59,7 +60,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'name'=>'required|string|max:100'

@@ -12,10 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id(); 
+            $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->json('product_ids'); 
             $table->decimal('total_price', 10, 2);
+            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])->default('pending');
+            $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
+            $table->string('shipping_name')->nullable();
+            $table->text('shipping_address')->nullable();
+            $table->string('shipping_city')->nullable();
+            $table->string('shipping_zip')->nullable();
+            $table->string('shipping_country')->nullable();
             $table->timestamps();
         });
     }
