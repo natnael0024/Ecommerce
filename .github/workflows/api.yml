@@ -17,10 +17,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker build -t hub.docker.com/yba:ecom -f laravel_api/dockerfile .
+        run: docker build -t hub.docker.com/yba:ecom_api -f laravel_api/dockerfile .
 
       - name: Push Docker image to Docker Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker tag hub.docker.com/yba:ecom ${{ secrets.DOCKER_USERNAME }}/yba:ecom
-          docker push ${{ secrets.DOCKER_USERNAME }}/yba:ecom
+          docker tag hub.docker.com/yba:ecom_api ${{ secrets.DOCKER_USERNAME }}/yba:ecom_api
+          docker push ${{ secrets.DOCKER_USERNAME }}/yba:ecom_api
