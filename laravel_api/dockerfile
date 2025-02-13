@@ -4,7 +4,7 @@ FROM php:8.3-fpm
 # Set working directory
 WORKDIR /var/www
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     zip \
@@ -19,10 +19,10 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
-COPY . .
+# Copy Laravel files before running Composer
+COPY . /var/www
 
-# Install dependencies
+# Run Composer Install
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
