@@ -1,59 +1,35 @@
-# Stage 1: Build dependencies
-FROM composer:2.7.2 AS composer
+# Use the official PHP image with necessary extensions
+FROM php:8.3-fpm
 
-WORKDIR /var/www/
+# Set working directory
+WORKDIR /var/www
 
-# Copy the entire application code into the container
-COPY . .
-
-# Install PHP dependencies without dev dependencies
-RUN composer install --ignore-platform-reqs --prefer-dist --no-scripts --no-progress --no-interaction --no-dev
-
-# Stage 2: Create the final image
-FROM php:8.2.8-fpm
-
-# Set environment variables
-ENV USER=www
-ENV GROUP=www
-ENV ACCEPT_EULA=Y
-
-# Install system dependencies and PHP extensions
+# Install dependencies
 RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    zip \
+    unzip \
     git \
     curl \
-    libpng-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    zip \
-    unzip \
-    gnupg \
-    gnupg2 \
-    nano && \
-    docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Install SQL Server drivers if needed (optional)
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update && \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev && \
-    echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application code from the composer stage
-COPY --from=composer /var/www/ /var/www/
+# Copy application files
+COPY . .
 
-# Setup working directory
-WORKDIR /var/www/
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Create user and group for running the application
-RUN groupadd -g 1000 ${GROUP} && useradd -u 1000 -ms /bin/bash -g ${GROUP} ${USER}
+# Set permissions
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Grant necessary permissions
-RUN chown -R ${USER} /var/www
-
-# Expose port for PHP-FPM
+# Expose port
 EXPOSE 9000
 
-# Start PHP-FPM server
+# Start PHP-FPM
 CMD ["php-fpm"]
