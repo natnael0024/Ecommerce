@@ -104,7 +104,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $similarProducts = Product::where('category_id',$product->category_id)
         ->whereNot('id',$product->id)
-        ->take(4)->get();
+        ->take(5)->get();
         return response()->json([
             'product'=>new ProductResource($product),
             'similar'=>$similarProducts
