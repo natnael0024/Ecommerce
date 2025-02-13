@@ -1,0 +1,25 @@
+name: Client CI/CD Pipeline
+
+on:
+  push:  
+    branches:
+      - main
+    paths:
+      - 'client/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t hub.docker.com/yba:ecom_client -f client/dockerfile .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker tag hub.docker.com/yba:ecom_client ${{ secrets.DOCKER_USERNAME }}/yba:ecom_client
+          docker push ${{ secrets.DOCKER_USERNAME }}/yba:ecom_client
