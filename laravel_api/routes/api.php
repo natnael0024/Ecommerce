@@ -35,14 +35,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     
     Route::post('/orders',[OrderController::class,'store'])->middleware('can:place_orders');
     Route::get('/orders',[OrderController::class,'index'])->middleware('can:manage_orders');
+    Route::get('/orders/customer',[OrderController::class,'getCustomerOrders']);
+    Route::get('/orders/{id}/customer',[OrderController::class,'getCustomerOrder']);
     Route::get('/orders/{id}',[OrderController::class,'show'])->middleware('can:manage_orders');
     Route::post('/orders/{id}',[OrderController::class,'update'])->middleware('can:manage_orders');
+    Route::put('/orders/{id}/status',[OrderController::class,'updateStatus'])->middleware('can:manage_orders');
     // Route::apiResource('/orders',OrderController::class);
 
     Route::apiResource('users',UserController::class)->middleware('role:admin');
     Route::get('getCustomers', [UserController::class,'getCustomers'])->middleware('can:manage_users');
     
-    Route::get( '/admin/analytics',[AdminController::class,'getAnalytics']);
 
     Route::get('/roles', [RoleController::class, 'index'])->middleware('role:admin');
     Route::post('/roles', [RoleController::class, 'store'])->middleware('role:admin');      
@@ -55,7 +57,23 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/permissions/{id}', [PermissionController::class, 'show']);     
     Route::put('/permissions/{id}', [PermissionController::class, 'update']);   
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']); 
+
+    Route::get( '/admin/analytics',[AdminController::class,'getAnalytics']);
+
+    Route::get('/admin/order-status', [AdminController::class, 'getOrderStatusData']);
+    Route::get('/admin/revenue-data', [AdminController::class, 'getRevenueData']);
+    Route::get('/admin/order-analytics', [AdminController::class, 'getMonthlyOrderData']);
+    
+    Route::get('/admin/analytics2', [AdminController::class, 'getAnalyticsData']);
+
+    Route::get('/admin/promotions', [AdminController::class, 'getPromosForAdmin']);       
+    Route::post('/promotions', [AdminController::class, 'storePromo']);       
+    Route::get('/promotions/{id}', [AdminController::class, 'showPromo']);     
+    Route::post('/promotions/{id}', [AdminController::class, 'updatePromo']);   
+    Route::delete('/promotions/{id}', [AdminController::class, 'destroyPromo']);
+    
 });
+Route::get('/promotions', [AdminController::class, 'getPromos']);         
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);

@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#0379e0] text-white px-2 sm:px-5 lg:px-20 py-4">
-      <div className="container flex justify-between items-center">
+      <div className="container flex justify-between items-center ">
         {/* Logo Section */}
         <Link
           href="/home"
@@ -45,21 +45,21 @@ const Navbar = () => {
 
         {/* Search Bar */}
         <form onSubmit={handleSearch}>
-        <div className="border dark:border-primary-200 rounded-full p-1 px-3 dark:bg-primary-200 bg-white w-[10rem] sm:w-[20rem] md:w-[30rem] lg:w-auto flex items-center">
-          <input 
-           type="text"
-           className="p-2 bg-transparent outline-none text-sky-900 dark:text-sky-300 w-full placeholder:text-[#0379e0]" 
-           placeholder="Search"
-           value={searchQuery}
-           onChange={(e) => setSearchQuery(e.target.value)} />
-          <button type='submit' className="p-1 bg-[#0379e0] rounded-full">
-            <CiSearch className="text-white text-2xl" />
-          </button>
-        </div>
-          </form>
+          <div className="border dark:border-primary-200 rounded-full p-1 px-3 dark:bg-primary-200 bg-white w-[10rem] sm:w-[20rem] md:w-[30rem] lg:w-auto flex items-center">
+            <input 
+             type="text"
+             className="p-2 bg-transparent outline-none text-sky-900 dark:text-sky-300 w-full placeholder:text-[#0379e0]" 
+             placeholder="Search"
+             value={searchQuery}
+             onChange={(e) => setSearchQuery(e.target.value)} />
+            <button type='submit' className="p-1 bg-[#0379e0] rounded-full">
+              <CiSearch className="text-white text-2xl" />
+            </button>
+          </div>
+        </form>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-6 ">
           <Link
             href="/home"
             className="hover:bg-[#103d64] text-white py-1 px-3 sm:py-2 md:py-3 md:px-4 lg:py-3 lg:px-5 rounded-full"
@@ -85,6 +85,13 @@ const Navbar = () => {
                 </div>
                 <FaCartShopping size={25} />
               </Link>
+              <Link
+                href="/my-orders"
+                className="relative hover:bg-[#103d64] text-white py-1 px-3 sm:py-2 md:py-3 md:px-4 lg:py-3 lg:px-5 rounded-full"
+                onClick={toggleMobileMenu}
+              >
+                My Orders
+              </Link>
               <span className="font-semibold flex items-center">
                 <FaUser />
                 {user.name}
@@ -106,9 +113,9 @@ const Navbar = () => {
               Login
             </Link>
           )}
-        </div>
-        <div className='hidden lg:block'>
+        <div className='hidden lg:block '>
           <ThemeToggle/>
+        </div>
         </div>
 
 
@@ -124,9 +131,9 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#0379e0] text-white p-4">
+        <div className="lg:hidden  bg-[#0379e0] text-white p-4">
           <Link
-            href="/"
+            href="/home"
             className="block hover:bg-[#103d64] py-2 px-4 rounded-full"
             onClick={toggleMobileMenu}
           >
@@ -149,6 +156,13 @@ const Navbar = () => {
                 onClick={toggleMobileMenu}
               >
                 Cart
+              </Link>
+              <Link
+                href="/my-orders"
+                className="block hover:bg-[#103d64] py-2 px-4 rounded-full"
+                onClick={toggleMobileMenu}
+              >
+                My Orders
               </Link>
               <button
                 onClick={() => {

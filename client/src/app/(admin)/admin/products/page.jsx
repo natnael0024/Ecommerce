@@ -244,7 +244,7 @@ const ProductsPage = () => {
             totalPages={totalPages} 
             onPageChange={setCurrentPage} 
             />
-        </div>
+      </div>
 
         
         <div className="mb-2 flex justify-between items-center">

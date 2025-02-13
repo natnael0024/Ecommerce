@@ -18,6 +18,8 @@ class RolePermissionSeeder extends Seeder
             'delete_products',
             'place_orders',
             'manage_orders',
+            'manage_users',
+            
         ];
 
         foreach ($permissions as $permission) {

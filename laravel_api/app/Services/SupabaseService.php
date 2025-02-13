@@ -25,26 +25,30 @@ class SupabaseService
         ]);
     }
 
-    public function uploadImage($file, $fileName)
+    public function upload($file, $folder)
     {
-        // $fileName = $path . '/' . uniqid() . '.' . $file->getClientOriginalExtension();
+        try {
+            $fileName = $folder . '/' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-        $response = $this->client->post("/storage/v1/object/$this->bucket/$fileName", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->supabaseKey,
-                'Content-Type'  => $file->getMimeType(),
-            ],
-            'body' => file_get_contents($file),
-        ]);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('Failed to upload file to Supabase');
+            $response = $this->client->post("/storage/v1/object/".$this->bucket.'/'.$fileName, [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$this->supabaseKey,
+                    'Content-Type'  => $file->getMimeType(),
+                ],
+                'body' => file_get_contents($file),
+            ]);
+    
+            if ($response->getStatusCode() !== 200) {
+                throw new \Exception('Failed to upload file to Supabase');
+            }
+    
+            return [
+                'file_name' => $fileName,
+                'url'       => $this->supabaseUrl.'/storage/v1/object/public/'.$this->bucket.'/'.$fileName,
+            ];
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        return [
-            'file_name' => $fileName,
-            'url'       => $this->supabaseUrl . "/storage/v1/object/public/$this->bucket/$fileName",
-        ];
     }
 
     public function deleteImage($url)

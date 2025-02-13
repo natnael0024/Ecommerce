@@ -6,10 +6,14 @@ import { useCart } from "@/context/CartContext"
 import { useAuth } from "@/context/AuthContext"
 import axios from "../../../../../axios"
 import Image from "next/image"
+import ProductCard from "@/components/ProductCard"
+import Spinner from "@/components/Spinner"
 
 const ProductPage = ({ params }) => {
   const { id } = use(params) 
   const [product, setProduct] = useState(null)
+  const [similarProducts, setSimilarProducts] = useState([])
+  
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const router = useRouter()
@@ -26,7 +30,8 @@ const ProductPage = ({ params }) => {
           throw new Error("Failed to fetch product details")
         }
         const data = await response.data
-        setProduct(data.data)
+        setProduct(data.product)
+        setSimilarProducts(data.similar)
       } catch (error) {
         // throw new Error(error)
         setError(error.message)
@@ -54,7 +59,7 @@ const ProductPage = ({ params }) => {
   }
 
   if (loading) {
-    return <p className="text-center mt-10">Loading product details...</p>
+    return <Spinner text={'Loading product details...'}/>
   }
 
   if (error) {
@@ -116,6 +121,20 @@ const ProductPage = ({ params }) => {
           </button>
         </div>
       </div>
+      {similarProducts.length > 0 &&
+      <div className=" mt-5">
+        <h1 className=" text-xl md:text-2xl font-semibold">Similar Products You Might Like</h1>
+        <div className=" mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {similarProducts.map(prod=>(
+            <ProductCard 
+                key={prod.id}
+                id={prod.id}
+                name={prod.name}
+                price={prod.price}
+                image={prod.image_path} />
+          ))}
+        </div>
+      </div>}
     </div>
   )
 }

@@ -16,6 +16,7 @@ const FeaturedSlider = ({ featuredItems }) => {
         spaceBetween={20}
         slidesPerView={1}
         navigation
+        loop
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         breakpoints={{
@@ -28,12 +29,12 @@ const FeaturedSlider = ({ featuredItems }) => {
           <SwiperSlide key={item.id}>
             <div className="bg-white shadow-lg rounded-lg ">
               <img
-                src={item.image}
-                alt={item.name}
+                src={item.media_path}
+                alt={item.title}
                 className="w-full h-48 object-cover rounded-lg"
               />
               {/* <div className="mt-4">
-                <h3 className="text-lg font-semibold">{item.name}</h3>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
                 <p className="text-gray-500">${item.price}</p>
               </div> */}
             </div>
