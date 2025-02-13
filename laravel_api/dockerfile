@@ -1,35 +1,27 @@
-# Use the official PHP image with necessary extensions
-FROM php:8.3-fpm
+FROM php:8.2-apache
 
-# Set working directory
-WORKDIR /var/www
-
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
-    curl \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install zip \
+    && a2enmod rewrite
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy Laravel files before running Composer
-COPY . /var/www
+WORKDIR /var/www/html
 
-# Run Composer Install
-RUN composer install --no-dev --optimize-autoloader
+COPY . /var/www/html
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# COPY apache2.conf /etc/apache2/apache2.conf
+# COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install
+RUN chown -R www-data:www-data /var/www/html/storage
+RUN chmod -R 777 /var/www/html/storage
 
-# Expose port
-EXPOSE 9000
+EXPOSE 80
 
 # Start PHP-FPM
 CMD ["php-fpm"]
