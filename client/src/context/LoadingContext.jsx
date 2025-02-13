@@ -15,7 +15,7 @@ export const LoadingProvider = ({ children }) => {
 
   return (
     <LoadingContext.Provider value={{ loading, startLoading, stopLoading }}>
-      {children}      
+      {children}
     </LoadingContext.Provider>
   )
 }

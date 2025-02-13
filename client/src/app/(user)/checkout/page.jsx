@@ -60,7 +60,7 @@ const Checkout = () => {
         autoClose: 5000,
         hideProgressBar: true,
       })
-      router.push('/order-success')
+      router.push('/my-orders')
     } catch (err) {
       toast.error('Failed to place the order. Please try again.', {
         position: 'top-center',

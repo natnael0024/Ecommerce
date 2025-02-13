@@ -8,6 +8,8 @@ import Image from 'next/image'
 import { MdAdd } from 'react-icons/md'
 import { toast } from 'react-toastify'
 import { useTitle } from '@/context/TitleContext'
+import { useLoading } from '@/context/LoadingContext'
+import Spinner from '@/components/Spinner'
 
 const AddProductPage = () => {
   const router = useRouter()
@@ -21,21 +23,25 @@ const AddProductPage = () => {
     image: null,
   })
   const [imagePreview, setImagePreview] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [categories,setCategories] = useState([])
   const {setTitle} = useTitle()
-  
+  const {startLoading, stopLoading, loading} = useLoading()
+
+  const fetchCategories = async () =>{
+    try {
+        startLoading()
+        const res = await axios.get('/categories')
+        setCategories(res.data.data)
+    } catch (error) {
+        throw new Error(error)
+    } finally {
+      stopLoading()
+    }
+  }
 
   useEffect(()=>{
-    const fetchCategories = async () =>{
-      try {
-          const res = await axios.get('/categories')
-          setCategories(res.data.data)
-      } catch (error) {
-          throw new Error(error)
-      }
-    }
     fetchCategories()
     setTitle('Products - Add')
   },[])
@@ -110,13 +116,16 @@ const AddProductPage = () => {
     }
   }
 
+  if(loading){
+    return <Spinner/>
+  }
   return (
     <div className="container  mt-8">
       <h1 className="text-2xl font-bold mb-4 flex gap-1 items-center "> 
         <MdAdd className='text-white p-1 bg-[#0379e0] rounded-full'/> 
         Add Product</h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      <form onSubmit={handleSubmit} className=" shadow rounded flex flex-col md:flex-row lg:flex-row sm:gap-7">
+      <form onSubmit={handleSubmit} className="  rounded flex flex-col md:flex-row lg:flex-row sm:gap-7">
         <div className="mb-4 sm:flex-1">
           <label className="block text-sm font-medium mb-2">Image</label>
           {imagePreview ? (
@@ -213,9 +222,9 @@ const AddProductPage = () => {
             <button
               type="submit"
               className="bg-primary hover:bg-primary-200 text-white px-4 py-2 rounded"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? 'Adding...' : 'Add Product'}
+              {isLoading ? 'Adding...' : 'Add Product'}
             </button>
           </div>
         </div>

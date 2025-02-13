@@ -15,7 +15,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['user', 'items']) // Load related user and order items
+        $orders = Order::with(['user', 'items']) 
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -72,6 +72,7 @@ class OrderController extends Controller
         foreach ($request->cartItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
+                'product_name'=>$item['name'],
                 'product_id' => $item['id'],
                 'price' => $item['price'],
                 'quantity' => $item['quantity'],
@@ -116,8 +117,14 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::findOr($id);
-        return response()->json(new OrderResource($order));
+        $order = Order::where('id',$id)
+            ->with(['user', 'items']) 
+            ->orderBy('created_at', 'desc')
+            ->first();
+        if(!$order){
+            return response()->json(['message'=>'not found'],404);
+        }
+        return response()->json($order);
     }
 
     /**
@@ -127,6 +134,36 @@ class OrderController extends Controller
     {
         //
     }
+
+    public function getCustomerOrders()
+    {
+        $user = Auth::user();
+        try {
+            $orders = Order::where('user_id', $user->id)
+            ->with(['items'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()],400);
+        }
+
+        return response()->json($orders);
+    }
+
+    public function getCustomerOrder(string $id)
+    {
+        $user = Auth::user();
+        $order = Order::where('id',$id)
+            ->where('user_id', $user->id)
+            ->with(['user', 'items']) 
+            ->orderBy('created_at', 'desc')
+            ->first();
+        if(!$order){
+            return response()->json(['message'=>'not found'],404);
+        }
+        return response()->json($order);
+    }
+
 
     /**
      * Update the specified resource in storage.

@@ -47,7 +47,7 @@ const AdminLayout = ({ children }) => {
                 {user &&
                  <button className=' flex items-center gap-1 text-white bg-[#0379e0] rounded-full p-2 px-3'
                   onClick={logout}>
-                  Logout
+                  <span className=' hidden md:block lg:block'>Logout</span>
                   <HiOutlineLogout/>
                  </button>
 

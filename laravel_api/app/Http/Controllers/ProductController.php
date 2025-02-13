@@ -39,7 +39,12 @@ class ProductController extends Controller
                 $products->where('category_id', $category);
             }
         }
-        $products = $products->paginate(10);
+        $products = $products
+        // ->orderBy('created_at','desc')
+        ->orderByRaw('RANDOM()')
+        ->orderByDesc('created_at')
+        ->inRandomOrder()->take(20)->get();
+        // ->paginate(10);
         
         return ProductResource::collection($products);
     }
@@ -79,13 +84,12 @@ class ProductController extends Controller
         {
             try{
                 $image = $request->file('image');
-                $result = $this->supabase->uploadImage($image, 'products');
+                $result = $this->supabase->upload($image, 'products');
                 $validated['image_path'] = $result['url'];
             } catch(\Exception $e){
-                return response()->json($e->getMessage());
+                return response()->json($e->getMessage(),400);
             }
         }
-
 
         $prod = Product::create($validated);
 
@@ -98,7 +102,13 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        return new ProductResource($product);
+        $similarProducts = Product::where('category_id',$product->category_id)
+        ->whereNot('id',$product->id)
+        ->take(4)->get();
+        return response()->json([
+            'product'=>new ProductResource($product),
+            'similar'=>$similarProducts
+            ]) ;
     }
 
     /**
@@ -140,7 +150,7 @@ class ProductController extends Controller
             try{
                 $image = $request->file('image');
                 $imageName = 'products/' . $validated['name'] . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $result = $this->supabase->uploadImage($image,$imageName);
+                $result = $this->supabase->upload($image,$imageName);
                 $validated['image_path'] = $result['url'];
             } catch(\Exception $e){
                 return response()->json($e->getMessage());

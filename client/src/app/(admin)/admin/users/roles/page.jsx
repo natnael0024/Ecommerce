@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useLoading } from "@/context/LoadingContext";
 import Spinner from "@/components/Spinner";
+import { useTitle } from "@/context/TitleContext";
 
 const RolePage = () => {
     const [roles, setRoles] = useState([]);
@@ -15,10 +16,13 @@ const RolePage = () => {
     const [formData, setFormData] = useState({ name: "", permissions: [] });
     const {startLoading, stopLoading, loading} = useLoading()
     const [isLoading, setIsLoading] = useState(false)
+    const { setTitle, title } = useTitle()
+    
 
     useEffect(() => {
         fetchRoles();
         fetchPermissions();
+        setTitle('Roles')
     }, []);
 
     const fetchRoles = async () => {

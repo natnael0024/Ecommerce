@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa"
+import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa"
 import { useLoading } from "@/context/LoadingContext"
 import Spinner from "@/components/Spinner"
 import axiosInstance from "../../../../../axios"
@@ -22,8 +22,12 @@ const UsersPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [role, setRole] = useState('')
+  const [roles, setRoles] = useState([])
+  
 
   useEffect(() => {
+    fetchRoles()
     fetchUsers()
     setTitle("Users")
   }, [])
@@ -50,10 +54,27 @@ const UsersPage = () => {
     }
   }
 
+  const fetchRoles = async () => {
+    try {
+        const response = await axiosInstance.get('/roles',{
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        setRoles(response.data)
+    } catch (error) {
+        toast.error("Failed to fetch roles.",{
+            hideProgressBar: true
+        })
+    } finally {
+    }
+  }
+
   const handleEdit = (user) => {
     setSelectedUser(user)
     setName(user.name)
     setEmail(user.email)
+    setRole(user.role)
     setIsModalOpen(true)
   }
 
@@ -76,8 +97,7 @@ const UsersPage = () => {
             },
           })
           fetchUsers()
-          Swal.fire("Deleted!", "Role has been deleted.", "success");
-          
+          Swal.fire("Deleted!", "User account has been deleted.", "success");
         } catch (error) {
           console.error("Error deleting user:", error)
           toast.error("Failed to delete user")
@@ -89,7 +109,7 @@ const UsersPage = () => {
   const handleSave = async () => {
     try {
       setIsLoading(true)
-      await axiosInstance.put(`/users/${selectedUser.id}`, { name, email },{
+      await axiosInstance.put(`/users/${selectedUser.id}`, { name, email, role },{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
@@ -114,17 +134,22 @@ const UsersPage = () => {
   }
 
   return (
-    <div className="p-6 bg-transparent">
-      <h1 className="text-2xl font-bold mb-4">{title}</h1>
+    <div className="py-6 bg-transparent">
       {loading ? (
         <Spinner />
       ) : (
         <>
-          <Link href={'/admin/users/add'}
-            className="flex justify-end"
-          > 
-            <span className=" bg-primary p-2 px-5 rounded-lg text-xl hover:bg-primary-200 duration-200 focus:ring-2 focus:ring-primary-50">Add</span>
-          </Link>
+          <div className=" flex items-center justify-between">
+            <h1 className="text-2xl font-bold mb-4">{title}</h1>
+            <Link href={'/admin/users/add'}
+              className="flex justify-end"
+              > 
+              <span className=" flex items-center gap-2 bg-primary p-2 px-8 rounded text-white text- hover:bg-primary-200 duration-200 focus:ring-2 focus:ring-primary-50">
+                <FaPlus/>
+                Add
+              </span>
+            </Link>
+          </div>
           <table className="w-full border-none font-sans">
           <thead className="border-b dark:border-primary-200">
             <tr className="text-gray-500 dark:text-white">
@@ -146,18 +171,15 @@ const UsersPage = () => {
                 <td className="p-2">{user.email}</td>
                 <td className="p-2">{user.role}</td>
                 <td className="p-2 flex justify-center gap-3">
-                  <button className="text-blue-500 hover:text-blue-700">
-                    <FaEye size={18} />
-                  </button>
                   <button
                     onClick={() => handleEdit(user)}
-                    className="text-green-500 hover:text-green-700"
+                    className="text-primary hover:text-primary-50"
                   >
                     <FaEdit size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(user.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-300"
                   >
                     <FaTrash size={18} />
                   </button>
@@ -188,6 +210,20 @@ const UsersPage = () => {
               placeholder="Email"
               className="w-full p-2 border rounded mb-4"
             />
+            <div className="mb-6">
+              <select
+                  value={role || ''}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                  className="w-full p-3 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-300"
+              >
+                  {roles.map((role) => (
+                      <option key={role.id} value={role.name}>
+                          {role.name}
+                      </option>
+                  ))}
+              </select>
+            </div>
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="bg-gray-500 px-4 py-2 rounded text-white">Cancel</button>
               <button 

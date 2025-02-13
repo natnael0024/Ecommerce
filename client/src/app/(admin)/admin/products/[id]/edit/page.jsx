@@ -57,7 +57,7 @@ const EditProductPage = ({ params }) => {
   }
   const fetchCategories = async () =>{
     try {
-        startLoading()
+      startLoading()
         const res = await axios.get('/categories')
         setCategories(res.data.data)
     } catch (error) {
@@ -121,7 +121,7 @@ const EditProductPage = ({ params }) => {
               draggable: true,
               progress: undefined,
             })
-      router.push('/admin')
+      router.push('/admin/products')
     } catch (err) {
        toast.error('Failed to update product', {
               position: 'top-center',
