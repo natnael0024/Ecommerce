@@ -30,6 +30,14 @@ class AdminController extends Controller
         return ProductResource::collection($products);
     }
 
+    public function getProduct($id)
+    {
+        $product = Product::findOrFail($id);
+        
+        return new ProductResource($product);
+    }
+
+
     public function getAnalyticsData()
     {
         try {

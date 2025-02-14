@@ -35,7 +35,11 @@ const EditProductPage = ({ params }) => {
   const fetchProduct = async () => {
     try {
       startLoading()
-      const response = await axios.get(`/products/${id}`)
+      const response = await axios.get(`/admin/products/${id}`,{
+        headers:{
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
+        }
+      })
       const product = response.data.data
       setProduct(product)
       setFormData({
