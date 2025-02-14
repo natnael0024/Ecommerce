@@ -26,38 +26,35 @@
 # CMD ["php-fpm"]
 
 # //////////
-# Use the official PHP image with necessary extensions
-FROM php:8.3-fpm
-
-# Set working directory
-WORKDIR /var/www
+FROM php:8.2-fpm-alpine AS composer-base
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    zip \
-    unzip \
-    git \
+RUN apk add --no-cache --virtual .build-deps \
+    autoconf \
     curl \
-    libonig-dev \
-    libxml2-dev \
+    git \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    unzip
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql zip
 
-# Copy Laravel files before running Composer
-COPY laravel_api/. /var/www
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Run Composer Install
-RUN composer install --no-dev --optimize-autoloader
+WORKDIR /app
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+FROM nginx:alpine
 
-# Expose port
-EXPOSE 9000
+COPY --from=composer-base /app /app
+COPY laravel_api/. /app
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Copy nginx configuration
+COPY laravel_api/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+# Set document root
+RUN sed -i "s!/usr/share/nginx/html!/app/public!g" /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
