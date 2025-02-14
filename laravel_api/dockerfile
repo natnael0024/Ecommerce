@@ -1,26 +1,63 @@
-FROM php:8.2-apache
+# FROM php:8.2-apache
 
+# RUN apt-get update && apt-get install -y \
+#     libzip-dev \
+#     zip \
+#     unzip \
+#     git \
+#     && docker-php-ext-install zip \
+#     && a2enmod rewrite
+
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# COPY laravel_api/. /var/www/html
+# WORKDIR /var/www/html
+
+# # COPY apache2.conf /etc/apache2/apache2.conf
+# # COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+# ENV COMPOSER_ALLOW_SUPERUSER=1
+# RUN composer install
+# RUN chown -R www-data:www-data /var/www/html/storage
+# RUN chmod -R 777 /var/www/html/storage
+
+# EXPOSE 80
+
+# # Start PHP-FPM
+# CMD ["php-fpm"]
+
+# //////////
+# Use the official PHP image with necessary extensions
+FROM php:8.3-fpm
+
+# Set working directory
+WORKDIR /var/www
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
+    libpng-dev \
     zip \
     unzip \
     git \
-    && docker-php-ext-install zip \
-    && a2enmod rewrite
+    curl \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY laravel_api/. /var/www/html
-WORKDIR /var/www/html
+# Copy Laravel files before running Composer
+COPY laravel_api/. /var/www
 
-# COPY apache2.conf /etc/apache2/apache2.conf
-# COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install
-RUN chown -R www-data:www-data /var/www/html/storage
-RUN chmod -R 777 /var/www/html/storage
+# Run Composer Install
+RUN composer install --no-dev --optimize-autoloader
 
-EXPOSE 80
+# Set permissions
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Expose port
+EXPOSE 9000
 
 # Start PHP-FPM
 CMD ["php-fpm"]
