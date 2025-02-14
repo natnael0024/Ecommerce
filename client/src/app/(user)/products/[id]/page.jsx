@@ -124,7 +124,7 @@ const ProductPage = ({ params }) => {
       {similarProducts.length > 0 &&
       <div className=" mt-5">
         <h1 className=" text-xl md:text-2xl font-semibold">Similar Products You Might Like</h1>
-        <div className=" mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div className=" mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {similarProducts.map(prod=>(
             <ProductCard 
                 key={prod.id}
