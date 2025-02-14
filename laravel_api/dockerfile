@@ -23,7 +23,7 @@ RUN chmod -R 777 /var/www/html/storage
 EXPOSE 8000
 
 # Start PHP-FPM
-CMD ["php artisan serve"]
+CMD ["apache2-foreground"]
 
 # //////////
 # FROM php:8.2-fpm-alpine AS composer-base
