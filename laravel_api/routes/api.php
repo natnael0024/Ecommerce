@@ -65,6 +65,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/admin/order-analytics', [AdminController::class, 'getMonthlyOrderData']);
     
     Route::get('/admin/analytics2', [AdminController::class, 'getAnalyticsData']);
+    Route::get('/admin/products',[AdminController::class,'getProducts']);
 
     Route::get('/admin/promotions', [AdminController::class, 'getPromosForAdmin']);       
     Route::post('/promotions', [AdminController::class, 'storePromo']);       

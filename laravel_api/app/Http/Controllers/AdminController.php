@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Promotion;
@@ -19,9 +20,16 @@ class AdminController extends Controller
         $this->supabase = $supabaseService;
         // $this->middleware('permission:create_products', ['only' => ['store']]);
     }
-    /**
-     * Display a listing of the resource.
-     */
+    
+    public function getProducts(Request $request)
+    {
+
+        $products = Product::orderBy('created_at','desc')
+        ->paginate(10);
+        
+        return ProductResource::collection($products);
+    }
+
     public function getAnalyticsData()
     {
         try {

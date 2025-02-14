@@ -31,13 +31,17 @@ const ProductsPage = () => {
 
   useEffect(()=>{
     fetchProducts()
-    fetchCategories();
+    fetchCategories()
   },[])
 
   const fetchProducts = async (page) => {
     try {
       startLoading()
-      const response = await axiosInstance.get(`/products?page=${page}`);
+      const response = await axiosInstance.get(`/admin/products?page=${page}`,{
+        headers:{
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.status !== 200) throw new Error("Failed to fetch products");
       setProducts(response.data.data);
       setTotalPages(response.data.meta.last_page);
@@ -50,7 +54,11 @@ const ProductsPage = () => {
 
   const fetchProductsWithPagination = async (page) => {
     try {
-      const response = await axiosInstance.get(`/products?page=${page}`);
+      const response = await axiosInstance.get(`/admin/products?page=${page}`,{
+        headers:{
+          'Authorization':`Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.status !== 200) throw new Error("Failed to fetch products");
       setProducts(response.data.data);
       setTotalPages(response.data.meta.last_page);
