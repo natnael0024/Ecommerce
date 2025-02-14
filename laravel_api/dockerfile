@@ -10,8 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR laravel_api
-COPY .  /var/www/html
+COPY laravel_api/. /var/www/html
 WORKDIR /var/www/html
 
 # COPY apache2.conf /etc/apache2/apache2.conf
