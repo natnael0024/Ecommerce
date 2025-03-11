@@ -4,6 +4,9 @@ import React, { useState, useEffect } from "react"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
 import { FaOpencart } from "react-icons/fa6"
+import { ToastContainer } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LoginPage = () => {
   const { login, register, user } = useAuth()
@@ -25,6 +28,7 @@ const LoginPage = () => {
         router.push("/home")
       }
     }
+
   }, [user, router])
 
   const handleRoleSelection = (selectedRole) => {
@@ -44,7 +48,11 @@ const LoginPage = () => {
     setError("")
 
     try {
-      await login(email, password) // Login for both roles (admin and user)
+      if(isRegister){
+         await register(name,email,password)
+      } else {
+        await login(email, password)
+      }
     } catch (error) {
       setError(error.message || "An error occurred")
     } finally {
@@ -54,6 +62,17 @@ const LoginPage = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-tl dark:from-black dark:to-primary-300 ">
+      <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+                />
       {/* Left Side: Form Section */}
       <div className=" max-w-md mx-auto my-auto p-6 rounded-xl flex flex-col justify-center w-full md:w-1/2">
         <div className="text-4xl mb-10 md:text-5xl lg:text-6xl text-secondary-100 font-bold flex items-center gap-1">
@@ -101,11 +120,11 @@ const LoginPage = () => {
             <input
               type="email"
               id="email"
-              value={email}
+              value={ isRegister ? '' : email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full text-black dark:text-white px-3 py-2  rounded"
               required
-              readOnly={role !== ""} // Make email field read-only based on role selection
+              readOnly={!isRegister}
             />
           </div>
           <div>
@@ -113,11 +132,12 @@ const LoginPage = () => {
             <input
               type="password"
               id="password"
-              value={password}
+              value={isRegister ? '' :password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full text-black dark:text-white px-3 py-2  rounded"
               required
-              readOnly={role !== ""} // Make password field read-only based on role selection
+              // readOnly={role !== ""}
+              readOnly={!isRegister}
             />
           </div>
           <button
