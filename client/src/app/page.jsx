@@ -156,7 +156,7 @@ export const LandingPage = () => {
 
       {/* Footer */}
       <footer className="py-6 text-center dark:bg-gray-900 dark:text-white">
-        <p>&copy; 2025 MyStore. All rights reserved.</p>
+        <p>&copy; 2025 MyStore. All rights reserved. Natnael Legesse</p>
       </footer>
     </div>
   );
