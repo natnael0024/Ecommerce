@@ -14,7 +14,7 @@ MyStore is an eCommerce platform built with Laravel (backend) and Next.js (front
 ![Preview](client/public/previews/cart.png)
 
 5. Checkout page
-![Preview](client/public/previews/checkout.png)
+![Preview](client/public/previews/chekout.png)
 
 6. Admin Dashboard
 ![Preview](client/public/previews/admin-dashboard.png)
