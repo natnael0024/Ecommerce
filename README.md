@@ -15,13 +15,17 @@ cp .env.example .env
 # DB_DATABASE=your_db
 # DB_USERNAME=your_user
 # DB_PASSWORD=your_password
-
+```
+### 2. Set up the backend (Laravel API)
+```bash
 composer install
 php artisan key:generate
 php artisan migrate
 php artisan db:seed   # if seeders are included
 php artisan serve
-
+```
+### 3. Set up the frontend (Next.js client)
+```bash
 cd ../client
 cp .env.local.example .env.local
 # Update environment variables if needed, for example:
