@@ -12,10 +12,12 @@ cd Ecommerce
 cd laravel_api
 cp .env.example .env
 ```
-# Open .env and update database credentials, e.g.:
+* Open .env and update database credentials, e.g.:
+```bash
 # DB_DATABASE=your_db
 # DB_USERNAME=your_user
 # DB_PASSWORD=your_password
+```
 
 ### 2. Set up the backend (Laravel API)
 ```bash
