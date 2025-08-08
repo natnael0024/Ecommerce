@@ -25,7 +25,7 @@ MyStore is an eCommerce platform built with Laravel (backend) and Next.js (front
 8. Add Product Page
 ![Preview](client/public/previews/add-product-page.png)
 
-# 👉🏽 [Live Demo](https://mystore-a0s0.onrender.com/)
+      # 👉🏽 [Live Demo](https://mystore-a0s0.onrender.com/)
 
 ##  Setup & Installation
 
