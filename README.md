@@ -11,11 +11,12 @@ git clone https://github.com/natnael0024/Ecommerce.git
 cd Ecommerce
 cd laravel_api
 cp .env.example .env
+```
 # Open .env and update database credentials, e.g.:
 # DB_DATABASE=your_db
 # DB_USERNAME=your_user
 # DB_PASSWORD=your_password
-```
+
 ### 2. Set up the backend (Laravel API)
 ```bash
 composer install
